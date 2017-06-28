@@ -1,13 +1,18 @@
 import xlrd
-import xlwt
+from xlrd import open_workbook
 import openpyxl
 from openpyxl import Workbook
 from openpyxl import load_workbook
-from xlutils.copy import copy
-from xlrd import open_workbook
+import os
 
-workbook = xlrd.open_workbook('config_file.xlsx')
-sheet = workbook.sheet_by_name('test')
+## Combines all of the information together using xlrd ## 
+config_file_name = input("Insert the excel file name (without .xlsx): ")
+config_sheet_name = input("Insert the sheet name: ")
+
+print("Retreiving all of the items in the worksheet.....\n")
+
+book = open_workbook(config_file_name+".xlsx")
+sheet = book.sheet_by_name(config_sheet_name)
 
 #first column: Index
 index_array = sheet.col_values(0)
@@ -62,18 +67,33 @@ for i in range(size):
         config_array[i].append(service_code)
     config_array[i].append("#")
 
-file = "config_file_test.xlsx"
-workbook = load_workbook(filename = file)
-worksheet = workbook.get_sheet_by_name("test")
-print(len(config_array))
+## Reads the information and saves into a new file using openpyxl ##
+
+dest_file = input("Input your destination file name (without .xlsx): ")
+dest_file2 = "only_config.xlsx"
+print("Saving all items in the excel file....")
+print("You should have 2 files in the folder, namely:")
+print("[ "+dest_file+".xlsx ] which adds a column to the original file, and")
+print("[ "+dest_file2+" ] containing only a configuration column.\n")
+
+workbook = load_workbook("config_file.xlsx")
+workbook2 = Workbook()
+worksheet = workbook.get_sheet_by_name(config_sheet_name)
+worksheet2 = workbook2.active
+
 for x in range(len(index_array)):
     write_string = ''
     for j in range(len(config_array[x])):
         write_string = write_string + config_array[x][j]+"\n"
-    #print(write_string)
-##    worksheet.cell(row = x+1, column = 6, value = write_string)
     worksheet['F1']='Configuration'
+    worksheet2['A1']='Configuration'
     worksheet['F'+str(x+2)]=write_string
-    print(x+1)
-            
-workbook.save(filename = file)
+    worksheet2['A'+str(x+2)]=write_string
+
+workbook.save(dest_file+".xlsx")
+workbook.close()
+
+workbook2.save(dest_file2)
+workbook.close()
+print("The program has finished processing.")
+os.system('pause')
