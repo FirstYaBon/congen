@@ -34,30 +34,25 @@ size = len(indexArray)
 for i in range(size):
 ##    print(tcpArray[i])
 ##    print(len(tcpArray[i]))
+    print("#")
     if(tcpArray[i][0]==""):
         protocol_type = "udp"
         protocol_array = udpArray[i]
     else:
         protocol_type = "tcp"
         protocol_array = tcpArray[i]
-    config = "ip service-set "+serviceArray[i]+" type object description "+ desArray[i]
+    config = "ip service-set "+serviceArray[i]+" type object"
     print(config)
+    if(desArray[i]!=""):
+        print("    description "+ desArray[i])
+
 ##    print(protocol_type)
 
     for j in range(len(protocol_array)):
-        service_code = "    service "+str(j)+" protocol "+protocol_type+" destination-port "+str(protocol_array[j])
+        protocol_array[j]=str(protocol_array[j]).split("-")
+        if(len(protocol_array[j])==2):
+            service_code = "    service "+str(j)+" protocol "+protocol_type+" destination-port "+protocol_array[j][0]+" to "+protocol_array[j][1]
+        else:
+            service_code = "    service "+str(j)+" protocol "+protocol_type+" destination-port "+protocol_array[j][0]
         print(service_code)
-
-
-
-
-
-
-#configuration = "ip service-set "+serviceArray[0]+" type object description "+desArray[0]+"\nservice "+str(indexArray[0]-1)+" protocol TCP destination-port "+tcpArray[0][0]
-
-#print(configuration)
-##print(indexArray)
-##print(serviceArray)
-##print(tcpArray)
-##print(udpArray)
-##print(desArray)
+    print("#")
